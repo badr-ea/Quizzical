@@ -27,16 +27,6 @@ jobs:
           export CI=false
           npm run build
 
-      - name: Commit and push build files
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Build and deployment commit"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Deploy to server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -44,4 +34,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+          # Copy build files to server using SCP
           scp -o StrictHostKeyChecking=no -P 27102 -r build/* badr@54.38.179.233:/var/www/html/react/
